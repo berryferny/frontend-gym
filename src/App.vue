@@ -6,6 +6,8 @@
       <nav class="nav-links" aria-label="Navegación principal">
         <button @click="irA('inicio')">Inicio</button>
         <button @click="irA('clases')">Clases</button>
+        <button @click="irA('nosotros')">Nosotros</button>
+        <button @click="irA('contacto')">Contacto</button>
 
         <template v-if="!usuario">
           <button @click="irA('login')">Iniciar sesión</button>
@@ -74,6 +76,67 @@
             <article class="discipline-card"><span>🩰</span><h3>Barre</h3><p>Una mezcla dinámica de danza, fuerza y resistencia.</p></article>
             <article class="discipline-card"><span>☁️</span><h3>Meditación</h3><p>Un espacio para bajar el ritmo y regresar a ti.</p></article>
           </div>
+        </div>
+      </section>
+
+      <section v-else-if="vista === 'nosotros'" class="page section-wrap info-page">
+        <div class="about-hero">
+          <div>
+            <span class="eyebrow">CONOCE GYMFIT</span>
+            <h2>Un espacio donde moverte también se siente bonito.</h2>
+            <p>
+              GymFit nace como una propuesta de bienestar que combina movimiento, comunidad y tecnología para hacer más sencilla la experiencia de reservar y organizar tus clases.
+            </p>
+            <button class="btn" @click="irA('clases')">Conocer las clases</button>
+          </div>
+          <div class="about-illustration" aria-hidden="true">
+            <span>🌷</span>
+            <strong>Tu bienestar,<br />a tu ritmo.</strong>
+          </div>
+        </div>
+
+        <div class="section-heading about-heading">
+          <span class="eyebrow">LO QUE NOS MUEVE</span>
+          <h2>Nuestra forma de hacer las cosas</h2>
+        </div>
+
+        <div class="values-grid">
+          <article><span>💗</span><h3>Comunidad</h3><p>Queremos que cada persona encuentre un espacio amable, cercano y sin juicios.</p></article>
+          <article><span>✨</span><h3>Bienestar</h3><p>El objetivo no es hacerlo perfecto, sino construir hábitos que se puedan disfrutar y sostener.</p></article>
+          <article><span>📱</span><h3>Simplicidad</h3><p>La tecnología nos ayuda a consultar horarios, reservar y administrar clases de forma rápida.</p></article>
+        </div>
+
+        <div class="about-cta">
+          <div>
+            <span class="eyebrow">EMPIEZA CUANDO QUIERAS</span>
+            <h3>Tu próxima clase puede empezar aquí.</h3>
+            <p>Regístrate, revisa la agenda y reserva el horario que mejor se adapte a ti.</p>
+          </div>
+          <button class="btn" @click="irA(usuario ? 'clases' : 'registro')">{{ usuario ? 'Ver agenda' : 'Crear cuenta' }}</button>
+        </div>
+      </section>
+
+      <section v-else-if="vista === 'contacto'" class="page section-wrap info-page">
+        <div class="page-heading">
+          <span class="eyebrow">ESTAMOS PARA TI</span>
+          <h2>¿Tienes alguna pregunta? 💌</h2>
+          <p>Este formulario funciona como parte de la demostración del sitio. Puedes usarlo para enviar dudas sobre clases, horarios o reservas.</p>
+        </div>
+
+        <div class="contact-layout">
+          <div class="contact-cards">
+            <article><span>📍</span><div><strong>Visítanos</strong><p>Aguascalientes, Ags.</p></div></article>
+            <article><span>🕒</span><div><strong>Horario</strong><p>Lunes a sábado · 7:00 a 21:00</p></div></article>
+            <article><span>💜</span><div><strong>Comunidad GymFit</strong><p>Movimiento, bienestar y acompañamiento.</p></div></article>
+          </div>
+
+          <form class="contact-form" @submit.prevent="enviarContacto">
+            <label>Nombre<input v-model.trim="contacto.nombre" type="text" placeholder="Tu nombre" required /></label>
+            <label>Correo electrónico<input v-model.trim="contacto.email" type="email" placeholder="hola@ejemplo.com" required /></label>
+            <label>Mensaje<textarea v-model.trim="contacto.mensaje" rows="5" placeholder="Cuéntanos cómo podemos ayudarte" required></textarea></label>
+            <button class="btn btn-wide">Enviar mensaje</button>
+            <small>En esta versión académica el envío se simula en el frontend.</small>
+          </form>
         </div>
       </section>
 
@@ -239,6 +302,10 @@
 
     <footer>
       <strong>GymFit 💜</strong>
+      <div class="footer-links">
+        <button @click="irA('nosotros')">Nosotros</button>
+        <button @click="irA('contacto')">Contacto</button>
+      </div>
       <span>Muévete a tu manera.</span>
       <small>Proyecto académico · 2026</small>
     </footer>
@@ -262,6 +329,7 @@ const error = ref('')
 
 const login = reactive({ email: '', password: '' })
 const registro = reactive({ nombre: '', email: '', password: '', confirmacion: '' })
+const contacto = reactive({ nombre: '', email: '', mensaje: '' })
 const nuevaClase = reactive({ nombre: '', disciplina: '', instructor: '', dia: '', hora: '', cupo: 10 })
 
 const primerNombre = computed(() => usuario.value?.nombre?.split(' ')[0] || '')
@@ -282,6 +350,12 @@ function irA(destino) {
   limpiarAvisos()
   vista.value = destino
   window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+function enviarContacto() {
+  const nombre = contacto.nombre.split(' ')[0]
+  Object.assign(contacto, { nombre: '', email: '', mensaje: '' })
+  avisar(`Gracias, ${nombre}. Recibimos tu mensaje 💌`)
 }
 
 function guardarSesion(data) {
