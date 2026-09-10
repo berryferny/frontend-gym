@@ -350,14 +350,12 @@
       </section>
     </main>
 
-    <footer>
-      <strong>GymFit</strong>
-      <div class="footer-links">
-        <button @click="irA('nosotros')">Nosotros</button>
-        <button @click="irA('contacto')">Contacto</button>
+    <footer class="site-footer">
+      <span class="footer-spacer"></span>
+      <div class="footer-brand">
+        <span class="footer-logo">GymFit</span>
       </div>
-      <span>Muévete a tu manera.</span>
-      <small>Proyecto académico · 2026</small>
+      <span class="footer-slogan">Muévete a tu manera.</span>
     </footer>
   </div>
 </template>
