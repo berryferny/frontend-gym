@@ -33,6 +33,34 @@
   background: #eef2e9;
 }
 
+/* Acciones de sesión: visibles pero todavía dentro de la paleta Bloom */
+.btn-soft {
+  color: #fffdf8;
+  background: #617457;
+  border: 1px solid #56684d;
+  box-shadow: 0 7px 18px rgba(67, 83, 59, 0.18);
+}
+
+.btn-soft:hover:not(:disabled) {
+  background: #53664b;
+  border-color: #4d5f45;
+  box-shadow: 0 10px 22px rgba(67, 83, 59, 0.25);
+}
+
+/* Acción destructiva: terracota cálido para diferenciarla sin romper la estética */
+.btn-danger {
+  color: #fffaf5;
+  background: #b96f58;
+  border: 1px solid #a8614d;
+  box-shadow: 0 7px 18px rgba(152, 79, 57, 0.16);
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #a85f49;
+  border-color: #995541;
+  box-shadow: 0 10px 22px rgba(152, 79, 57, 0.23);
+}
+
 .visual-card {
   background: linear-gradient(160deg, #e9eee3, #d7dfcf);
 }
