@@ -1,7 +1,7 @@
 <template>
   <div class="app-shell">
     <header class="navbar">
-      <button class="brand" @click="irA('inicio')">GymFit</button>
+      <button class="brand" @click="irA('inicio')">Bloom Studio</button>
 
       <nav class="nav-links" aria-label="Navegación principal">
         <button @click="irA('inicio')">Inicio</button>
@@ -129,10 +129,10 @@
       <section v-else-if="vista === 'nosotros'" class="page section-wrap info-page">
         <div class="about-hero">
           <div>
-            <span class="eyebrow">CONOCE GYMFIT</span>
+            <span class="eyebrow">CONOCE BLOOM STUDIO</span>
             <h2>Un espacio donde moverte también se siente bonito.</h2>
             <p>
-              GymFit nace como una propuesta de bienestar que combina movimiento, comunidad y tecnología para hacer más sencilla la experiencia de reservar y organizar tus clases.
+              Bloom Studio nace como una propuesta de bienestar que combina movimiento, comunidad y tecnología para hacer más sencilla la experiencia de reservar y organizar tus clases.
             </p>
             <button class="btn" @click="irA('clases')">Conocer las clases</button>
           </div>
@@ -174,7 +174,7 @@
           <div class="contact-cards">
             <article><span class="contact-marker">01</span><div><strong>Visítanos</strong><p>Aguascalientes, Ags.</p></div></article>
             <article><span class="contact-marker">07:00–21:00</span><div><strong>Horario</strong><p>Lunes a sábado · 7:00 a 21:00</p></div></article>
-            <article><span class="contact-marker">◎</span><div><strong>Comunidad GymFit</strong><p>Movimiento, bienestar y acompañamiento.</p></div></article>
+            <article><span class="contact-marker">◎</span><div><strong>Comunidad Bloom Studio</strong><p>Movimiento, bienestar y acompañamiento.</p></div></article>
           </div>
 
           <form class="contact-form" @submit.prevent="enviarContacto">
@@ -189,7 +189,7 @@
 
       <section v-else-if="vista === 'clases'" class="page section-wrap">
         <div class="page-heading">
-          <span class="eyebrow">AGENDA GYMFIT</span>
+          <span class="eyebrow">AGENDA BLOOM STUDIO</span>
           <h2>Elige tu próxima clase</h2>
           <p>Consulta los lugares disponibles y reserva con tu cuenta.</p>
         </div>
@@ -275,7 +275,7 @@
         <div v-else class="reservation-list">
           <article v-for="reserva in reservas" :key="reserva.id" class="reservation-card">
             <div>
-              <span class="class-badge">{{ reserva.disciplina || 'GymFit' }}</span>
+              <span class="class-badge">{{ reserva.disciplina || 'Bloom Studio' }}</span>
               <h3>{{ reserva.nombre }}</h3>
               <p class="muted">Con {{ reserva.instructor }} · {{ reserva.dia }} · {{ reserva.hora }}</p>
             </div>
@@ -288,7 +288,7 @@
         <div class="page-heading split-heading">
           <div>
             <span class="eyebrow">ADMINISTRACIÓN</span>
-            <h2>Panel GymFit</h2>
+            <h2>Panel Bloom Studio</h2>
             <p>Consulta usuarios, clases y reservas desde un solo lugar.</p>
           </div>
           <span class="admin-chip">Administrador</span>
@@ -353,7 +353,7 @@
     <footer class="site-footer">
       <span class="footer-spacer"></span>
       <div class="footer-brand">
-        <span class="footer-logo">GymFit</span>
+        <span class="footer-logo">Bloom Studio</span>
       </div>
       <span class="footer-slogan">Muévete a tu manera.</span>
     </footer>
