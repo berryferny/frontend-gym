@@ -1,6 +1,6 @@
-# GymFit 💜
+# Bloom Studio 💚
 
-GymFit es una aplicación web académica para un estudio de bienestar con clases de **Pilates, Yoga, Barre y Meditación**. Permite registro e inicio de sesión, consulta de clases, reservas y cancelaciones. También incluye un panel de administración para consultar clientes y reservas y gestionar clases.
+Bloom Studio es una aplicación web académica para un estudio de bienestar con clases de **Pilates, Yoga, Barre y Meditación**. Permite registro e inicio de sesión, consulta de clases, reservas y cancelaciones. También incluye un panel de administración para consultar clientes y reservas y gestionar clases.
 
 La versión actual utiliza **Vue 3 + Vite** en el frontend y **Supabase** como backend en la nube para autenticación, base de datos PostgreSQL y acceso a datos.
 
@@ -115,7 +115,7 @@ where email = 'admin@gymfit.com';
 
 La contraseña del administrador se administra desde Supabase Auth y no debe escribirse en el repositorio.
 
-## 5. Ejecutar GymFit
+## 5. Ejecutar Bloom Studio
 
 Solo necesitas una terminal:
 
@@ -169,7 +169,7 @@ frontend-gym/
 
 ## Flujo recomendado para la demostración
 
-1. Abrir GymFit y mostrar las clases.
+1. Abrir Bloom Studio y mostrar las clases.
 2. Registrar un cliente.
 3. Reservar una clase.
 4. Mostrar `Mis reservas`.
@@ -180,4 +180,4 @@ frontend-gym/
 
 ## Objetivo académico
 
-GymFit cubre el alcance del **Sitio Gym** mediante un sitio informativo, autenticación, catálogo de clases, reservas persistentes y gestión administrativa. Al usar Supabase, la misma base de datos y servicios pueden reutilizarse posteriormente desde una aplicación móvil.
+Bloom Studio cubre el alcance del **Sitio Gym** mediante un sitio informativo, autenticación, catálogo de clases, reservas persistentes y gestión administrativa. Al usar Supabase, la misma base de datos y servicios pueden reutilizarse posteriormente desde una aplicación móvil.
