@@ -9,14 +9,28 @@ const supabase = supabaseUrl && supabaseAnonKey
 
 function requireSupabase() {
   if (!supabase) {
-    throw new Error('Supabase no está configurado. Añade VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.')
+    throw new Error('Supabase no está configurado. Crea un archivo .env con VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.')
   }
+}
+
+function friendlyError(error, fallback = 'Ocurrió un error al comunicarse con Supabase.') {
+  const message = String(error?.message || '')
+
+  if (error?.code === '23505') return new Error('Ya reservaste esta clase.')
+  if (error?.code === '23503') return new Error('La clase seleccionada ya no existe.')
+  if (message.includes('CLASE_LLENA')) return new Error('La clase ya no tiene lugares disponibles.')
+  if (message.includes('SOLO_CLIENTES')) return new Error('Solo los clientes pueden reservar clases.')
+  if (message.includes('Invalid login credentials')) return new Error('Correo o contraseña incorrectos.')
+  if (message.includes('Email not confirmed')) return new Error('Primero confirma tu correo para iniciar sesión.')
+  if (message.includes('User already registered')) return new Error('Ya existe una cuenta con ese correo.')
+
+  return new Error(message || fallback)
 }
 
 async function getCurrentUser() {
   requireSupabase()
   const { data: { user }, error } = await supabase.auth.getUser()
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error)
   if (!user) throw new Error('Debes iniciar sesión.')
   return user
 }
@@ -28,35 +42,21 @@ async function getUserRole(userId) {
     .eq('id', userId)
     .single()
 
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible consultar el perfil.')
   return data
 }
 
 async function obtenerClases() {
   requireSupabase()
-  const { data: clases, error } = await supabase
-    .from('clases')
-    .select('*')
-    .order('id', { ascending: true })
 
-  if (error) throw new Error(error.message)
+  const { data, error } = await supabase.rpc('get_clases_con_disponibilidad')
+  if (error) throw friendlyError(error, 'No fue posible consultar las clases.')
 
-  const salida = []
-  for (const item of clases || []) {
-    const { count, error: countError } = await supabase
-      .from('reservas')
-      .select('id', { count: 'exact', head: true })
-      .eq('clase_id', item.id)
-
-    if (countError) throw new Error(countError.message)
-
-    salida.push({
-      ...item,
-      disponibles: Math.max(item.cupo - (count || 0), 0)
-    })
-  }
-
-  return salida
+  return (data || []).map((clase) => ({
+    ...clase,
+    cupo: Number(clase.cupo),
+    disponibles: Number(clase.disponibles)
+  }))
 }
 
 async function registro(datos) {
@@ -66,22 +66,22 @@ async function registro(datos) {
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: {
-      data: { nombre }
-    }
+    options: { data: { nombre } }
   })
 
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible crear la cuenta.')
+  if (!data.user) throw new Error('No fue posible crear la cuenta.')
 
-  const user = data.user
-  const token = data.session?.access_token || ''
+  if (!data.session) {
+    throw new Error('Cuenta creada. Revisa tu correo y confirma la cuenta antes de iniciar sesión.')
+  }
 
   return {
-    token,
+    token: data.session.access_token,
     usuario: {
-      id: user?.id,
+      id: data.user.id,
       nombre,
-      email,
+      email: data.user.email || email,
       rol: 'cliente'
     }
   }
@@ -92,18 +92,16 @@ async function login(datos) {
   const { email, password } = datos || {}
 
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible iniciar sesión.')
 
-  const user = data.user
-  const session = data.session
-  const perfil = await getUserRole(user.id)
+  const perfil = await getUserRole(data.user.id)
 
   return {
-    token: session?.access_token || '',
+    token: data.session?.access_token || '',
     usuario: {
-      id: user.id,
-      nombre: perfil?.nombre || user.user_metadata?.nombre || user.email,
-      email: user.email,
+      id: data.user.id,
+      nombre: perfil?.nombre || data.user.user_metadata?.nombre || data.user.email,
+      email: data.user.email,
       rol: perfil?.rol || 'cliente'
     }
   }
@@ -112,13 +110,14 @@ async function login(datos) {
 async function misReservas(_token) {
   requireSupabase()
   const user = await getCurrentUser()
+
   const { data: reservas, error } = await supabase
     .from('reservas')
     .select('id, clase_id, created_at')
     .eq('usuario_id', user.id)
     .order('id', { ascending: false })
 
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible consultar tus reservas.')
 
   const salida = []
   for (const reserva of reservas || []) {
@@ -128,7 +127,7 @@ async function misReservas(_token) {
       .eq('id', reserva.clase_id)
       .single()
 
-    if (claseError) throw new Error(claseError.message)
+    if (claseError) throw friendlyError(claseError, 'No fue posible consultar una clase reservada.')
 
     salida.push({
       id: reserva.id,
@@ -150,111 +149,62 @@ async function crearReserva(_token, claseId) {
   requireSupabase()
   const user = await getCurrentUser()
 
-  const { data: clase, error: claseError } = await supabase
-    .from('clases')
-    .select('*')
-    .eq('id', claseId)
+  const { data, error } = await supabase
+    .from('reservas')
+    .insert({ usuario_id: user.id, clase_id: Number(claseId) })
+    .select('id')
     .single()
 
-  if (claseError) throw new Error(claseError.message)
-
-  const { count, error: countError } = await supabase
-    .from('reservas')
-    .select('id', { count: 'exact', head: true })
-    .eq('clase_id', claseId)
-
-  if (countError) throw new Error(countError.message)
-
-  if (count >= clase.cupo) {
-    throw new Error('La clase ya no tiene lugares disponibles.')
-  }
-
-  const { data: existing, error: existingError } = await supabase
-    .from('reservas')
-    .select('id')
-    .eq('usuario_id', user.id)
-    .eq('clase_id', claseId)
-    .limit(1)
-
-  if (existingError) throw new Error(existingError.message)
-  if ((existing || []).length > 0) {
-    throw new Error('Ya reservaste esta clase.')
-  }
-
-  const { error: insertError } = await supabase
-    .from('reservas')
-    .insert({ usuario_id: user.id, clase_id: claseId })
-
-  if (insertError) throw new Error(insertError.message)
-
-  return { mensaje: 'Reserva creada correctamente.' }
+  if (error) throw friendlyError(error, 'No fue posible crear la reserva.')
+  return { id: data.id, mensaje: 'Reserva creada correctamente.' }
 }
 
 async function cancelarReserva(_token, reservaId) {
   requireSupabase()
   const user = await getCurrentUser()
-  const profile = await getUserRole(user.id)
 
-  const { data: reserva, error: findError } = await supabase
+  const { error } = await supabase
     .from('reservas')
-    .select('id, usuario_id')
-    .eq('id', reservaId)
-    .single()
+    .delete()
+    .eq('id', Number(reservaId))
+    .eq('usuario_id', user.id)
 
-  if (findError) throw new Error(findError.message)
-
-  if (profile.rol !== 'admin' && reserva.usuario_id !== user.id) {
-    throw new Error('No puedes cancelar esta reserva.')
-  }
-
-  const query = supabase.from('reservas').delete().eq('id', reservaId)
-  if (profile.rol !== 'admin') {
-    query.eq('usuario_id', user.id)
-  }
-
-  const { error } = await query
-  if (error) throw new Error(error.message)
-
+  if (error) throw friendlyError(error, 'No fue posible cancelar la reserva.')
   return { mensaje: 'Reserva cancelada.' }
 }
 
 async function adminUsuarios(_token) {
   requireSupabase()
+
   const { data, error } = await supabase
     .from('profiles')
-    .select('*')
+    .select('id, nombre, email, rol, created_at')
+    .eq('rol', 'cliente')
     .order('created_at', { ascending: false })
 
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible consultar los usuarios.')
   return data || []
 }
 
 async function adminReservas(_token) {
   requireSupabase()
+
   const { data: reservas, error } = await supabase
     .from('reservas')
     .select('id, created_at, usuario_id, clase_id')
     .order('id', { ascending: false })
 
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible consultar las reservas.')
 
   const salida = []
   for (const reserva of reservas || []) {
-    const { data: usuario, error: userError } = await supabase
-      .from('profiles')
-      .select('nombre, email')
-      .eq('id', reserva.usuario_id)
-      .single()
+    const [{ data: usuario, error: userError }, { data: clase, error: claseError }] = await Promise.all([
+      supabase.from('profiles').select('nombre, email').eq('id', reserva.usuario_id).single(),
+      supabase.from('clases').select('nombre, disciplina, dia, hora').eq('id', reserva.clase_id).single()
+    ])
 
-    if (userError) throw new Error(userError.message)
-
-    const { data: clase, error: claseError } = await supabase
-      .from('clases')
-      .select('nombre, disciplina, dia, hora')
-      .eq('id', reserva.clase_id)
-      .single()
-
-    if (claseError) throw new Error(claseError.message)
+    if (userError) throw friendlyError(userError, 'No fue posible consultar el cliente de una reserva.')
+    if (claseError) throw friendlyError(claseError, 'No fue posible consultar la clase de una reserva.')
 
     salida.push({
       id: reserva.id,
@@ -271,8 +221,17 @@ async function adminReservas(_token) {
   return salida
 }
 
+async function requireAdminSession() {
+  const user = await getCurrentUser()
+  const profile = await getUserRole(user.id)
+  if (profile.rol !== 'admin') throw new Error('No tienes permisos de administrador.')
+  return user
+}
+
 async function crearClase(_token, datos) {
   requireSupabase()
+  await requireAdminSession()
+
   const payload = {
     nombre: datos.nombre,
     disciplina: datos.disciplina,
@@ -288,12 +247,14 @@ async function crearClase(_token, datos) {
     .select('*')
     .single()
 
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible crear la clase.')
   return data
 }
 
 async function actualizarClase(_token, claseId, datos) {
   requireSupabase()
+  await requireAdminSession()
+
   const payload = {
     nombre: datos.nombre,
     disciplina: datos.disciplina,
@@ -306,23 +267,24 @@ async function actualizarClase(_token, claseId, datos) {
   const { data, error } = await supabase
     .from('clases')
     .update(payload)
-    .eq('id', claseId)
+    .eq('id', Number(claseId))
     .select('*')
     .single()
 
-  if (error) throw new Error(error.message)
+  if (error) throw friendlyError(error, 'No fue posible actualizar la clase.')
   return data
 }
 
 async function eliminarClase(_token, claseId) {
   requireSupabase()
+  await requireAdminSession()
+
   const { error } = await supabase
     .from('clases')
     .delete()
-    .eq('id', claseId)
+    .eq('id', Number(claseId))
 
-  if (error) throw new Error(error.message)
-
+  if (error) throw friendlyError(error, 'No fue posible eliminar la clase.')
   return { mensaje: 'Clase eliminada.' }
 }
 
