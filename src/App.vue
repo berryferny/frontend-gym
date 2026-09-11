@@ -1,7 +1,7 @@
 <template>
   <div class="app-shell">
     <header class="navbar">
-      <button class="brand" @click="irA('inicio')">GymFit <span>💜</span></button>
+      <button class="brand" @click="irA('inicio')">Bloom Studio</button>
 
       <nav class="nav-links" aria-label="Navegación principal">
         <button @click="irA('inicio')">Inicio</button>
@@ -54,12 +54,14 @@
 
           <div class="hero-visual" aria-hidden="true">
             <div class="visual-card visual-main">
-              <span class="visual-icon">🧘‍♀️</span>
-              <p>Respira. Muévete.</p>
-              <strong>Hazlo por ti.</strong>
+              <img class="visual-image" :src="heroImage" alt="" />
+              <div class="visual-content">
+                <p>Respira. Muévete.</p>
+                <strong>Hazlo por ti.</strong>
+              </div>
             </div>
-            <div class="floating-card top">✨ Tu momento</div>
-            <div class="floating-card bottom">💗 Tu comunidad</div>
+            <div class="floating-card top">Tu momento</div>
+            <div class="floating-card bottom">Tu comunidad</div>
           </div>
         </div>
 
@@ -71,10 +73,55 @@
           </div>
 
           <div class="discipline-grid">
-            <article class="discipline-card"><span>🌸</span><h3>Pilates</h3><p>Fuerza, control y movilidad con movimientos conscientes.</p></article>
-            <article class="discipline-card"><span>🌿</span><h3>Yoga</h3><p>Conecta respiración y movimiento mientras ganas flexibilidad.</p></article>
-            <article class="discipline-card"><span>🩰</span><h3>Barre</h3><p>Una mezcla dinámica de danza, fuerza y resistencia.</p></article>
-            <article class="discipline-card"><span>☁️</span><h3>Meditación</h3><p>Un espacio para bajar el ritmo y regresar a ti.</p></article>
+            <article class="discipline-card">
+              <span class="discipline-icon" aria-label="Pilates">
+                <svg class="discipline-svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <path d="M13 36C16 30 18 27 24 24C30 27 32 30 35 36" />
+                  <path d="M16 21C17 17 20 14 24 14C28 14 31 17 32 21" />
+                  <path d="M24 17L24 29" />
+                  <path d="M13 36L18 38M35 36L30 38" />
+                </svg>
+              </span>
+              <h3>Pilates</h3>
+              <p>Fuerza, control y movilidad con movimientos conscientes.</p>
+            </article>
+            <article class="discipline-card">
+              <span class="discipline-icon" aria-label="Yoga">
+                <svg class="discipline-svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <path d="M24 9C20 14 18 18 18 22C18 27 21 29 24 31C27 29 30 27 30 22C30 18 28 14 24 9Z" />
+                  <path d="M16 30C18 34 21 36 24 36C27 36 30 34 32 30" />
+                  <path d="M24 32C24 36 24 39 24 40" />
+                  <path d="M12 21C15 22 16 24 18 23" />
+                </svg>
+              </span>
+              <h3>Yoga</h3>
+              <p>Conecta respiración y movimiento mientras ganas flexibilidad.</p>
+            </article>
+            <article class="discipline-card">
+              <span class="discipline-icon" aria-label="Barre">
+                <svg class="discipline-svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <path d="M18 15L23 21L18 27" />
+                  <path d="M30 15L25 21L30 27" />
+                  <path d="M22 27L24 34L26 27" />
+                  <path d="M12 36C18 34 20 34 24 36C28 34 30 34 36 36" />
+                </svg>
+              </span>
+              <h3>Barre</h3>
+              <p>Una mezcla dinámica de danza, fuerza y resistencia.</p>
+            </article>
+            <article class="discipline-card">
+              <span class="discipline-icon" aria-label="Meditación">
+                <svg class="discipline-svg" viewBox="0 0 48 48" aria-hidden="true">
+                  <path d="M24 10C28 16 30 20 24 25C18 20 20 16 24 10Z" />
+                  <path d="M24 25C29 26 31 28 31 32C31 35 29 37 24 38C19 37 17 35 17 32C17 28 19 26 24 25Z" />
+                  <path d="M24 15C24 19 24 22 24 25" />
+                  <path d="M13 34C17 32 19 31 22 32" />
+                  <path d="M35 34C31 32 29 31 26 32" />
+                </svg>
+              </span>
+              <h3>Meditación</h3>
+              <p>Un espacio para bajar el ritmo y regresar a ti.</p>
+            </article>
           </div>
         </div>
       </section>
@@ -82,15 +129,15 @@
       <section v-else-if="vista === 'nosotros'" class="page section-wrap info-page">
         <div class="about-hero">
           <div>
-            <span class="eyebrow">CONOCE GYMFIT</span>
+            <span class="eyebrow">CONOCE BLOOM STUDIO</span>
             <h2>Un espacio donde moverte también se siente bonito.</h2>
             <p>
-              GymFit nace como una propuesta de bienestar que combina movimiento, comunidad y tecnología para hacer más sencilla la experiencia de reservar y organizar tus clases.
+              Bloom Studio nace como una propuesta de bienestar que combina movimiento, comunidad y tecnología para hacer más sencilla la experiencia de reservar y organizar tus clases.
             </p>
             <button class="btn" @click="irA('clases')">Conocer las clases</button>
           </div>
           <div class="about-illustration" aria-hidden="true">
-            <span>🌷</span>
+            <img class="about-image" :src="heroImage" alt="" />
             <strong>Tu bienestar,<br />a tu ritmo.</strong>
           </div>
         </div>
@@ -101,9 +148,9 @@
         </div>
 
         <div class="values-grid">
-          <article><span>💗</span><h3>Comunidad</h3><p>Queremos que cada persona encuentre un espacio amable, cercano y sin juicios.</p></article>
-          <article><span>✨</span><h3>Bienestar</h3><p>El objetivo no es hacerlo perfecto, sino construir hábitos que se puedan disfrutar y sostener.</p></article>
-          <article><span>📱</span><h3>Simplicidad</h3><p>La tecnología nos ayuda a consultar horarios, reservar y administrar clases de forma rápida.</p></article>
+          <article><h3>Comunidad</h3><p>Queremos que cada persona encuentre un espacio amable, cercano y sin juicios.</p></article>
+          <article><h3>Bienestar</h3><p>El objetivo no es hacerlo perfecto, sino construir hábitos que se puedan disfrutar y sostener.</p></article>
+          <article><h3>Simplicidad</h3><p>La tecnología nos ayuda a consultar horarios, reservar y administrar clases de forma rápida.</p></article>
         </div>
 
         <div class="about-cta">
@@ -119,15 +166,15 @@
       <section v-else-if="vista === 'contacto'" class="page section-wrap info-page">
         <div class="page-heading">
           <span class="eyebrow">ESTAMOS PARA TI</span>
-          <h2>¿Tienes alguna pregunta? 💌</h2>
+          <h2>¿Tienes alguna pregunta?</h2>
           <p>Este formulario funciona como parte de la demostración del sitio. Puedes usarlo para enviar dudas sobre clases, horarios o reservas.</p>
         </div>
 
         <div class="contact-layout">
           <div class="contact-cards">
-            <article><span>📍</span><div><strong>Visítanos</strong><p>Aguascalientes, Ags.</p></div></article>
-            <article><span>🕒</span><div><strong>Horario</strong><p>Lunes a sábado · 7:00 a 21:00</p></div></article>
-            <article><span>💜</span><div><strong>Comunidad GymFit</strong><p>Movimiento, bienestar y acompañamiento.</p></div></article>
+            <article><span class="contact-marker">01</span><div><strong>Visítanos</strong><p>Aguascalientes, Ags.</p></div></article>
+            <article><span class="contact-marker">07:00–21:00</span><div><strong>Horario</strong><p>Lunes a sábado · 7:00 a 21:00</p></div></article>
+            <article><span class="contact-marker">◎</span><div><strong>Comunidad Bloom Studio</strong><p>Movimiento, bienestar y acompañamiento.</p></div></article>
           </div>
 
           <form class="contact-form" @submit.prevent="enviarContacto">
@@ -142,14 +189,17 @@
 
       <section v-else-if="vista === 'clases'" class="page section-wrap">
         <div class="page-heading">
-          <span class="eyebrow">AGENDA GYMFIT</span>
-          <h2>Elige tu próxima clase ✨</h2>
+          <span class="eyebrow">AGENDA BLOOM STUDIO</span>
+          <h2>Elige tu próxima clase</h2>
           <p>Consulta los lugares disponibles y reserva con tu cuenta.</p>
         </div>
 
         <div v-if="cargando" class="empty-state">Cargando clases...</div>
         <div v-else class="class-grid">
           <article v-for="clase in clases" :key="clase.id" class="class-card">
+            <div class="class-image-wrap">
+              <img class="class-image" :src="getDisciplineImage(clase.disciplina)" :alt="clase.disciplina" />
+            </div>
             <div class="class-top">
               <span class="class-badge">{{ clase.disciplina || clase.nombre.split(' ')[0] }}</span>
               <span class="spots" :class="{ full: clase.disponibles <= 0 }">
@@ -159,8 +209,9 @@
             <h3>{{ clase.nombre }}</h3>
             <p class="muted">Con {{ clase.instructor }}</p>
             <div class="class-details">
-              <span>🗓️ {{ clase.dia }}</span>
-              <span>🕒 {{ clase.hora }}</span>
+              <span class="class-date"><strong>{{ clase.dia }}</strong></span>
+              <span class="class-time">{{ clase.hora }} · 01 hora</span>
+              <span class="class-duration">Duración: 60 minutos</span>
             </div>
             <button class="btn btn-wide" :disabled="clase.disponibles <= 0" @click="reservar(clase.id)">
               {{ clase.disponibles > 0 ? 'Reservar clase' : 'Sin lugares' }}
@@ -171,7 +222,7 @@
 
       <section v-else-if="vista === 'login'" class="auth-page">
         <div class="auth-card">
-          <span class="auth-icon">💜</span>
+          <span class="auth-icon"><img :src="heroImage" alt="" /></span>
           <span class="eyebrow">QUÉ BUENO VERTE</span>
           <h2>Bienvenida de nuevo</h2>
           <p class="muted">Ingresa con tu correo y contraseña. El sistema detectará automáticamente tu rol.</p>
@@ -188,7 +239,7 @@
 
       <section v-else-if="vista === 'registro'" class="auth-page">
         <div class="auth-card">
-          <span class="auth-icon">✨</span>
+          <span class="auth-icon"><img :src="heroImage" alt="" /></span>
           <span class="eyebrow">EMPIEZA CON NOSOTRAS</span>
           <h2>Crea tu cuenta</h2>
           <p class="muted">Regístrate como cliente para poder reservar y administrar tus clases.</p>
@@ -209,7 +260,7 @@
         <div class="page-heading split-heading">
           <div>
             <span class="eyebrow">MI ESPACIO</span>
-            <h2>Mis reservas 💗</h2>
+            <h2>Mis reservas</h2>
             <p>Aquí puedes consultar y cancelar tus próximas clases.</p>
           </div>
           <button class="btn" @click="irA('clases')">Reservar otra clase</button>
@@ -217,7 +268,6 @@
 
         <div v-if="cargando" class="empty-state">Cargando tus reservas...</div>
         <div v-else-if="reservas.length === 0" class="empty-state">
-          <span>🌷</span>
           <h3>Aún no tienes reservas</h3>
           <p>Explora nuestras clases y elige la primera.</p>
           <button class="btn" @click="irA('clases')">Ver clases</button>
@@ -225,7 +275,7 @@
         <div v-else class="reservation-list">
           <article v-for="reserva in reservas" :key="reserva.id" class="reservation-card">
             <div>
-              <span class="class-badge">{{ reserva.disciplina || 'GymFit' }}</span>
+              <span class="class-badge">{{ reserva.disciplina || 'Bloom Studio' }}</span>
               <h3>{{ reserva.nombre }}</h3>
               <p class="muted">Con {{ reserva.instructor }} · {{ reserva.dia }} · {{ reserva.hora }}</p>
             </div>
@@ -238,16 +288,16 @@
         <div class="page-heading split-heading">
           <div>
             <span class="eyebrow">ADMINISTRACIÓN</span>
-            <h2>Panel GymFit ⚙️</h2>
+            <h2>Panel Bloom Studio</h2>
             <p>Consulta usuarios, clases y reservas desde un solo lugar.</p>
           </div>
           <span class="admin-chip">Administrador</span>
         </div>
 
         <div class="admin-stats">
-          <article><span>👥</span><strong>{{ adminUsuarios.length }}</strong><p>clientes</p></article>
-          <article><span>🧘‍♀️</span><strong>{{ clases.length }}</strong><p>clases</p></article>
-          <article><span>📅</span><strong>{{ adminReservas.length }}</strong><p>reservas</p></article>
+          <article><span class="admin-stat-icon"><img :src="heroImage" alt="" /></span><strong>{{ adminUsuarios.length }}</strong><p>clientes</p></article>
+          <article><span class="admin-stat-icon"><img :src="heroImage" alt="" /></span><strong>{{ clases.length }}</strong><p>clases</p></article>
+          <article><span class="admin-stat-icon"><img :src="heroImage" alt="" /></span><strong>{{ adminReservas.length }}</strong><p>reservas</p></article>
         </div>
 
         <div class="admin-grid">
@@ -300,14 +350,12 @@
       </section>
     </main>
 
-    <footer>
-      <strong>GymFit 💜</strong>
-      <div class="footer-links">
-        <button @click="irA('nosotros')">Nosotros</button>
-        <button @click="irA('contacto')">Contacto</button>
+    <footer class="site-footer">
+      <span class="footer-spacer"></span>
+      <div class="footer-brand">
+        <span class="footer-logo">Bloom Studio</span>
       </div>
-      <span>Muévete a tu manera.</span>
-      <small>Proyecto académico · 2026</small>
+      <span class="footer-slogan">Muévete a tu manera.</span>
     </footer>
   </div>
 </template>
@@ -315,6 +363,22 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import api from './services/api'
+import heroImage from './assets/yoga.jpg'
+import pilatesImage from './assets/pilates.jpg'
+import yogaImage from './assets/yoga.jpg'
+import barreImage from './assets/barre.jpg'
+import meditationImage from './assets/meditation.jpg'
+
+const disciplineImages = {
+  Pilates: pilatesImage,
+  Yoga: yogaImage,
+  Barre: barreImage,
+  'Meditación': meditationImage
+}
+
+function getDisciplineImage(disciplina) {
+  return disciplineImages[disciplina] || disciplineImages.Yoga
+}
 
 const vista = ref('inicio')
 const usuario = ref(null)
@@ -346,8 +410,13 @@ function avisar(texto, tipo = 'success') {
   window.setTimeout(limpiarAvisos, 4200)
 }
 
-function irA(destino) {
+async function irA(destino) {
   limpiarAvisos()
+
+  if (destino === 'clases') {
+    await cargarClases()
+  }
+
   vista.value = destino
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -355,7 +424,7 @@ function irA(destino) {
 function enviarContacto() {
   const nombre = contacto.nombre.split(' ')[0]
   Object.assign(contacto, { nombre: '', email: '', mensaje: '' })
-  avisar(`Gracias, ${nombre}. Recibimos tu mensaje 💌`)
+  avisar(`Gracias, ${nombre}. Recibimos tu mensaje`)
 }
 
 function guardarSesion(data) {
@@ -439,7 +508,7 @@ async function reservar(claseId) {
   try {
     await api.crearReserva(token.value, claseId)
     await cargarClases()
-    avisar('¡Reserva confirmada! Te esperamos 💜')
+    avisar('Reserva confirmada. Te esperamos.')
   } catch (e) {
     avisar(e.message, 'error')
   } finally {

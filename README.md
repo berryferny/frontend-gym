@@ -1,136 +1,123 @@
-# GymFit 💜
+# Bloom Studio 💚
 
-GymFit es una aplicación web académica para la administración de un estudio de bienestar con clases de **Pilates, Yoga, Barre y Meditación**. El proyecto permite que los clientes se registren, inicien sesión, consulten las clases disponibles, realicen reservas y administren sus reservas. También incluye un panel de administración para consultar clientes y reservas, además de crear o eliminar clases.
+Bloom Studio es una aplicación web académica para un estudio de bienestar con clases de **Pilates, Yoga, Barre y Meditación**. Permite registro e inicio de sesión, consulta de clases, reservas y cancelaciones. También incluye un panel de administración para consultar clientes y reservas y gestionar clases.
 
-El sistema fue diseñado como base para una futura aplicación móvil: el frontend consume una **API REST**, por lo que los mismos servicios de usuarios, clases y reservas pueden reutilizarse posteriormente desde una app móvil.
+La versión actual utiliza **Vue 3 + Vite** en el frontend y **Supabase** como backend en la nube para autenticación, base de datos PostgreSQL y acceso a datos.
 
 ## Funcionalidades
 
 ### Cliente
-
-- Registro de cuenta.
-- Inicio de sesión.
+- Registro e inicio de sesión con Supabase Auth.
 - Consulta de clases y lugares disponibles.
 - Reserva de clases.
-- Consulta de reservas personales.
-- Cancelación de reservas.
-- Persistencia de sesión en el navegador.
+- Consulta y cancelación de reservas.
 
 ### Administrador
-
-- Inicio de sesión con rol de administrador.
-- Dashboard con resumen de clientes, clases y reservas.
-- Consulta de usuarios registrados.
-- Consulta de todas las reservas.
-- Creación de nuevas clases.
-- Eliminación de clases.
-- Endpoints disponibles para actualización de clases.
+- Inicio de sesión con rol `admin`.
+- Consulta de clientes y reservas.
+- Alta, actualización y eliminación de clases.
 
 ## Tecnologías
-
-### Frontend
 
 - Vue 3
 - Vite
 - JavaScript
-- HTML
-- CSS
-
-### Backend
-
-- Node.js
-- Express
-- SQLite
-- JSON Web Tokens (JWT)
-- bcryptjs para cifrado de contraseñas
+- HTML y CSS
+- Supabase Auth
+- Supabase PostgreSQL
+- Row Level Security (RLS)
+- GitHub
 
 ## Arquitectura
 
 ```text
 Navegador
    |
-   | HTTP / JSON
    v
 Vue 3 + Vite
    |
-   | API REST
+   | Supabase JS / API
    v
-Node.js + Express
-   |
-   v
-SQLite
+Supabase
+   |-- Auth
+   |-- PostgreSQL
+   |-- RLS
+   `-- funciones SQL
 ```
 
-El frontend se ejecuta normalmente en `http://localhost:5173` y la API en `http://localhost:3000`.
+> La carpeta `backend/` contiene la implementación anterior con Express + SQLite y se conserva como respaldo del desarrollo. El frontend actual no depende de ese servidor para funcionar.
 
 ## Requisitos
 
-Necesitas tener instalado:
-
-- Node.js 20 o superior recomendado.
-- npm.
-- Git, si vas a clonar el repositorio.
-
-Comprueba la instalación con:
+Se recomienda **Node.js 22** y npm.
 
 ```bash
 node -v
 npm -v
 ```
 
-## Instalación
-
-### 1. Clonar el repositorio
+## 1. Clonar e instalar
 
 ```bash
 git clone https://github.com/berryferny/frontend-gym.git
 cd frontend-gym
-```
-
-### 2. Instalar el frontend
-
-Desde la carpeta principal:
-
-```bash
 npm install
 ```
 
-### 3. Instalar el backend
+## 2. Configurar Supabase
 
-```bash
-cd backend
-npm install
-cd ..
-```
-
-No es necesario crear manualmente la base de datos. La API genera `backend/data/gymfit.db` automáticamente la primera vez que inicia y agrega clases de demostración.
-
-## Cómo correr el proyecto
-
-Debes mantener **dos terminales abiertas**.
-
-### Terminal 1: backend
-
-```bash
-cd backend
-npm run dev
-```
-
-La API quedará disponible en:
+Crea un proyecto en Supabase y abre **SQL Editor**. Ejecuta completo:
 
 ```text
-http://localhost:3000
+supabase/schema.sql
 ```
 
-Puedes comprobar que está funcionando visitando:
+Ese script crea:
 
-```text
-http://localhost:3000/api/health
+- `profiles`
+- `clases`
+- `reservas`
+- clases de demostración
+- trigger de creación de perfiles
+- políticas RLS
+- cálculo seguro de disponibilidad
+- validación de cupo antes de insertar una reserva
+
+## 3. Variables de entorno
+
+Copia `.env.example` como `.env` en la raíz del proyecto:
+
+```env
+VITE_SUPABASE_URL=https://TU-PROYECTO.supabase.co
+VITE_SUPABASE_ANON_KEY=TU_CLAVE_PUBLICA_SUPABASE
 ```
 
-### Terminal 2: frontend
+También se admite `VITE_SUPABASE_PUBLISHABLE_KEY` en lugar de `VITE_SUPABASE_ANON_KEY`.
 
-Desde la carpeta principal del proyecto:
+**Nunca uses una clave `service_role` en el frontend.**
+
+## 4. Configurar autenticación
+
+En Supabase ve a **Authentication**. Para una demo rápida puedes desactivar temporalmente la confirmación de correo; si se mantiene activada, cada usuario deberá confirmar su email antes de iniciar sesión.
+
+Al registrarse, el sistema crea automáticamente un registro en `profiles` con rol `cliente`.
+
+### Crear administrador
+
+1. Crea o registra el usuario que usarás como administrador.
+2. En SQL Editor ejecuta:
+
+```sql
+update public.profiles
+set rol = 'admin'
+where email = 'admin@gymfit.com';
+```
+
+La contraseña del administrador se administra desde Supabase Auth y no debe escribirse en el repositorio.
+
+## 5. Ejecutar Bloom Studio
+
+Solo necesitas una terminal:
 
 ```bash
 npm run dev
@@ -142,98 +129,55 @@ Vite mostrará una dirección similar a:
 http://localhost:5173
 ```
 
-Abre esa dirección en tu navegador.
+## Datos y seguridad
 
-## Cuenta de administrador para la demostración
+### Disponibilidad
 
-La base de datos crea automáticamente esta cuenta de prueba:
+Las clases se consultan mediante la función SQL `get_clases_con_disponibilidad()`, que calcula lugares libres usando todas las reservas sin exponer datos privados de otros usuarios.
 
-```text
-Correo: admin@gymfit.com
-Contraseña: GymFit2026!
-```
+### Reservas
 
-Los usuarios normales deben registrarse desde la pantalla **Únete**. Por seguridad, el formulario público nunca permite seleccionar el rol de administrador.
+La tabla `reservas` tiene una restricción única por usuario y clase. Un trigger valida el cupo dentro de PostgreSQL y bloquea el registro si la clase ya está llena, incluso cuando dos usuarios intentan reservar casi al mismo tiempo.
 
-> La cuenta anterior es únicamente para fines académicos y demostración local. En un sistema real las credenciales deben configurarse de forma segura y no publicarse en el repositorio.
+### RLS
 
-## Variables de entorno del backend
-
-El proyecto funciona localmente sin configuración adicional, pero puedes copiar `backend/.env.example` como `backend/.env` para personalizarlo:
-
-```env
-PORT=3000
-CLIENT_ORIGIN=http://localhost:5173
-JWT_SECRET=cambia-esta-clave-por-una-segura
-```
-
-## API REST principal
-
-### Autenticación
-
-```text
-POST /api/auth/register
-POST /api/auth/login
-```
-
-### Clases
-
-```text
-GET /api/clases
-```
-
-### Reservas del cliente
-
-```text
-POST   /api/reservas
-GET    /api/reservas/mias
-DELETE /api/reservas/:id
-```
-
-### Administración
-
-```text
-GET    /api/admin/usuarios
-GET    /api/admin/reservas
-POST   /api/admin/clases
-PUT    /api/admin/clases/:id
-DELETE /api/admin/clases/:id
-```
-
-Los endpoints privados utilizan un token JWT enviado en el encabezado `Authorization: Bearer <token>`.
-
-## Compilar el frontend para producción
-
-```bash
-npm run build
-```
-
-Los archivos compilados se generan dentro de `dist`.
-
-Para probar la compilación localmente:
-
-```bash
-npm run preview
-```
+- Un cliente puede consultar su propio perfil y sus propias reservas.
+- Un administrador puede consultar clientes y reservas.
+- Las clases son visibles públicamente.
+- Solo administradores pueden crear, editar o eliminar clases.
 
 ## Estructura principal
 
 ```text
 frontend-gym/
+├── public/
+│   └── favicon.svg
 ├── src/
 │   ├── App.vue
 │   ├── main.js
 │   ├── style.css
+│   ├── assets/
 │   └── services/
 │       └── api.js
-├── backend/
-│   ├── server.js
-│   ├── package.json
-│   └── .env.example
+├── supabase/
+│   └── schema.sql
+├── backend/          # versión anterior / respaldo
+├── .env.example
 ├── package.json
 └── README.md
 ```
 
+## Flujo recomendado para la demostración
+
+1. Abrir Bloom Studio y mostrar las clases.
+2. Registrar un cliente.
+3. Reservar una clase.
+4. Mostrar `Mis reservas`.
+5. Cancelar o conservar la reserva.
+6. Iniciar sesión como administrador.
+7. Mostrar usuarios y reservas.
+8. Crear una clase nueva y comprobar que aparece en el catálogo.
+
 ## Objetivo académico
 
-Este proyecto cumple el alcance del **Sitio Gym** al incluir un sitio informativo, registro e inicio de sesión, catálogo de clases, reservas funcionales, persistencia de datos y un API REST básico de usuarios y reservas que puede reutilizarse posteriormente en Desarrollo Móvil.
+Bloom Studio cubre el alcance del **Sitio Gym** mediante un sitio informativo, autenticación, catálogo de clases, reservas persistentes y gestión administrativa. Al usar Supabase, la misma base de datos y servicios pueden reutilizarse posteriormente desde una aplicación móvil.
